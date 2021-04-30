@@ -1,7 +1,7 @@
 from api import uploader_api
 from local_storage import local_storage
 
-from os.path import join
+from os.path import join, split
 
 api = uploader_api.Api()
 api.login()
@@ -61,6 +61,7 @@ def get_albums_local():
     albums = local_storage.get_local_albums()
     albums = flatten_local_albums(albums)
     albums = filter_local_albs(albums)
+    albums = sort_local_albums(albums)
     return albums
 
 
@@ -86,5 +87,27 @@ def filter_local_albs(albums):
     return [album for album in albums if len(album['__content__']) > 0]
 
 
-def create_album(name):
-    return api.create_album(name)
+def sort_local_albums(albums):
+    for alb in albums:
+        paths = split_path(alb['parent'])
+        alb['parent_paths'] = paths
+
+    return sorted(albums, key=lambda album: len(album['parent_paths']))
+
+
+def split_path(path):
+    res = []
+
+    if path is None or len(path) == 0:
+        return res
+
+    a, b = split(path)
+    while len(a) > 0:
+        res.append(b)
+        a, b = split(a)
+
+    return res
+
+
+def create_album(name, parent_id=None):
+    return api.create_album(name, parent_id)

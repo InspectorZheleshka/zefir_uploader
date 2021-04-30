@@ -23,11 +23,11 @@ class Api:
             if data_format == 'rest':
                 resp = parse(resp.content)
                 res_dict = loads(dumps(resp))
-                #print(res_dict)
+                # print(res_dict)
                 return res_dict
             else:
                 json_resp = resp.json()
-                #print(json_resp)
+                # print(json_resp)
                 return json_resp
         except Exception as ex:
             print(ex)
@@ -64,6 +64,9 @@ class Api:
             resp = self.request('pwg.categories.getList', cat_id=parent_cat)
         return resp['result']['categories']
 
-    def create_album(self, name):
-        resp = self.request('pwg.categories.add', name=name)
-        return resp
+    def create_album(self, name, parent_id=None):
+        if parent_id is None:
+            resp = self.request('pwg.categories.add', name=name)
+        else:
+            resp = self.request('pwg.categories.add', name=name, cat_id=parent_id)
+        return resp['result']['id']
