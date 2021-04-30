@@ -10,14 +10,17 @@ def get_remote_albums():
 
 
 def main():
-    local_albs = get_local_albums()
+    local_albums = get_local_albums()
     remote_albums = get_remote_albums()
 
-    print(local_albs)
+    local_albums_titles = [alb['title'] for alb in local_albums]
+    remote_albums_titles = [alb['title'] for alb in local_albums]
+
+    print(local_albums)
     print(remote_albums)
 
-    print([alb['title'] for alb in local_albs])
-    print([alb['name'] for alb in remote_albums])
+    print(local_albums_titles)
+    print(remote_albums_titles)
 
 
 if __name__ == '__main__':

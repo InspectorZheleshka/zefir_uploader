@@ -58,10 +58,10 @@ def flatten_remote_albums(albums, parent=None):
 
 
 def get_albums_local():
-    albs = local_storage.get_local_albums()
-    albs = flatten_local_albums(albs)
-    albs = filter_local_albs(albs)
-    return albs
+    albums = local_storage.get_local_albums()
+    albums = flatten_local_albums(albums)
+    albums = filter_local_albs(albums)
+    return albums
 
 
 def flatten_local_albums(albums, title=local_storage.storage_path, path=None):
