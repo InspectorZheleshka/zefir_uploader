@@ -107,8 +107,16 @@ def sort_local_albums(albums):
 def sort_images(albums):
     for album in albums:
         content = album['__content__']
-        album['__content__'] = sorted(content, reverse=True)
+        album['__content__'] = sorted(content, key=name_to_int, reverse=True)
     return albums
+
+
+def name_to_int(name):
+    try:
+        return int(name.split('.')[0])
+    except Exception as ex:
+        print(ex)
+        return 99999999
 
 
 def split_path(path):
