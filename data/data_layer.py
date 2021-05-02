@@ -111,3 +111,8 @@ def split_path(path):
 
 def create_album(name, parent_id=None):
     return api.create_album(name, parent_id)
+
+
+def upload_image(image_path, cat_id):
+    file = open(image_path, 'rb')
+    return api.upload_image(file, cat_id, split(image_path)[1])

@@ -28,16 +28,18 @@ def start_uploading(local_album, remote_album):
     images = local_album['__content__']
     images_count = len(images)
 
+    local_album_full_path = join(local_album['parent'], local_album['title'])
+
     while pos < images_count:
         image_to_upload = images[pos]
 
-        upload_image(join(local_album['parent'], image_to_upload), remote_album['id'])
+        upload_image(join(local_album_full_path, image_to_upload), remote_album['id'])
 
         pos += 1
 
 
 def upload_image(image_path, cat_id):
-    pass
+    storage.upload_image(image_path, cat_id)
 
 
 def main():

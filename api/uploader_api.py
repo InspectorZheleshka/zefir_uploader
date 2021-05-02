@@ -8,26 +8,32 @@ class Api:
         self.base_path = 'https://mellowzefir.art/ws.php?format={format}&method={method}'
         self.s = Session()
 
-    def request(self, method, data_format='json', **kwargs):
+    def request(self, method, data_format='json', files=None, **kwargs):
+        def req():
+            if files is None:
+                return self.s.post(url, data=kwargs)
+            else:
+                return self.s.post(url, data=kwargs, files=files)
+
         try:
             url = self.base_path.format(format=data_format, method=method)
 
-            resp = self.s.post(url, data=kwargs)
+            resp = req()
 
             if resp.status_code == 404 or resp.status_code == 405 or resp.status_code == 401:
                 if self.login():
-                    resp = self.s.post(url, data=kwargs)
+                    resp = req()
                 else:
                     return None
 
             if data_format == 'rest':
                 resp = parse(resp.content)
                 res_dict = loads(dumps(resp))
-                # print(res_dict)
+                print(res_dict)
                 return res_dict
             else:
                 json_resp = resp.json()
-                # print(json_resp)
+                print(json_resp)
                 return json_resp
         except Exception as ex:
             print(ex)
@@ -70,3 +76,6 @@ class Api:
         else:
             resp = self.request('pwg.categories.add', name=name, cat_id=parent_id)
         return resp['result']['id']
+
+    def upload_image(self, image, cat_id, name):
+        return self.request('pwg.images.addSimple', files={'image': image}, name=name, category=cat_id)
