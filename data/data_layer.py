@@ -70,7 +70,7 @@ def get_albums_local():
     albums = flatten_local_albums(albums)
     albums = filter_local_albs(albums)
     albums = sort_local_albums(albums)
-    albums = sort_local_albums(albums)
+    albums = sort_images(albums)
     return albums
 
 

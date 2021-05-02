@@ -43,6 +43,7 @@ def start_uploading(local_album, remote_album):
 
 
 def upload_image(image_path, cat_id):
+    print(f'Uploading {image_path} to {cat_id}')
     return storage.upload_image(image_path, cat_id)
 
 
