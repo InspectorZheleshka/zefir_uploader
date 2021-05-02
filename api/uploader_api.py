@@ -71,10 +71,11 @@ class Api:
         return resp['result']['categories']
 
     def create_album(self, name, parent_id=None):
+        print(f'Create album request: {name} nested in {parent_id}')
         if parent_id is None:
             resp = self.request('pwg.categories.add', name=name)
         else:
-            resp = self.request('pwg.categories.add', name=name, cat_id=parent_id)
+            resp = self.request('pwg.categories.add', name=name, parent=parent_id)
         return resp['result']['id']
 
     def upload_image(self, image, cat_id, name):

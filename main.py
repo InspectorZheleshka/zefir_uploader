@@ -71,6 +71,7 @@ def main():
                 new_remote['parent_id'] = parent_id
 
             remote_albums.append(new_remote)
+            remote_albums_titles.append(title)
 
         remote_album = find_remote(remote_albums, title)
 
