@@ -107,7 +107,7 @@ def sort_local_albums(albums):
 def sort_images(albums):
     for album in albums:
         content = album['__content__']
-        album['__content__'] = sorted(content, key=name_to_int, reverse=True)
+        album['__content__'] = sorted(content, key=name_to_int, reverse=False)
     return albums
 
 
