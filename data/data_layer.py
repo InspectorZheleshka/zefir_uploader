@@ -62,6 +62,7 @@ def get_albums_local():
     albums = flatten_local_albums(albums)
     albums = filter_local_albs(albums)
     albums = sort_local_albums(albums)
+    albums = sort_local_albums(albums)
     return albums
 
 
@@ -93,6 +94,13 @@ def sort_local_albums(albums):
         alb['parent_paths'] = paths
 
     return sorted(albums, key=lambda album: len(album['parent_paths']))
+
+
+def sort_images(albums):
+    for album in albums:
+        content = album['__content__']
+        album['__content__'] = sorted(content, reverse=True)
+    return albums
 
 
 def split_path(path):
