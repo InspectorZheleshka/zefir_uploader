@@ -9,22 +9,8 @@ class Api:
         self.s = Session()
 
     def request(self, method, data_format='json', files=None, **kwargs):
-        def req():
-            if files is None:
-                return self.s.post(url, data=kwargs)
-            else:
-                return self.s.post(url, data=kwargs, files=files)
-
         try:
-            url = self.base_path.format(format=data_format, method=method)
-
-            resp = req()
-
-            if resp.status_code == 404 or resp.status_code == 405 or resp.status_code == 401:
-                if self.login():
-                    resp = req()
-                else:
-                    return None
+            resp = self.get_response(method, data_format, files, **kwargs)
 
             if data_format == 'rest':
                 resp = parse(resp.content)
@@ -38,6 +24,28 @@ class Api:
         except Exception as ex:
             print(ex)
             return None
+
+    def get_response(self, method, data_format='json', files=None, retry_count=0, **kwargs):
+        if retry_count == 3:
+            return None
+
+        url = self.base_path.format(format=data_format, method=method)
+
+        def req():
+            if files is None:
+                return self.s.post(url, data=kwargs)
+            else:
+                return self.s.post(url, data=kwargs, files=files)
+
+        resp = req()
+
+        if resp.status_code == 404 or resp.status_code == 405 or resp.status_code == 401:
+            if self.login():
+                return self.get_response(method, data_format, files, retry_count + 1, **kwargs)
+            else:
+                return None
+
+        return resp
 
     def login(self):
         print(f'Login')
@@ -68,7 +76,12 @@ class Api:
             resp = self.request('pwg.categories.getList')
         else:
             resp = self.request('pwg.categories.getList', cat_id=parent_cat)
-        return resp['result']['categories']
+
+        try:
+            return resp['result']['categories']
+        except Exception as ex:
+            print(ex)
+            return None
 
     def create_album(self, name, parent_id=None):
         print(f'Create album request: {name} nested in {parent_id}')
@@ -76,7 +89,12 @@ class Api:
             resp = self.request('pwg.categories.add', name=name)
         else:
             resp = self.request('pwg.categories.add', name=name, parent=parent_id)
-        return resp['result']['id']
+
+        try:
+            return resp['result']['id']
+        except Exception as ex:
+            print(ex)
+            return None
 
     def upload_image(self, image, cat_id, name):
         return self.request('pwg.images.addSimple', files={'image': image}, name=name, category=cat_id)

@@ -9,12 +9,20 @@ api.login()
 
 def get_albums_remote():
     albums = get_albums_for_cat()
+
+    if albums is None:
+        input("Can't obtain remotes")
+        exit()
+
     albums = flatten_remote_albums(albums)
     return albums
 
 
 def get_albums_for_cat(parent_cat=None):
     albums = api.get_albums(parent_cat)
+
+    if albums is None:
+        return None
 
     if parent_cat is not None:
         pos = 0

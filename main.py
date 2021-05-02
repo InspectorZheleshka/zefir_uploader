@@ -33,13 +33,17 @@ def start_uploading(local_album, remote_album):
     while pos < images_count:
         image_to_upload = images[pos]
 
-        upload_image(join(local_album_full_path, image_to_upload), remote_album['id'])
+        resp = upload_image(join(local_album_full_path, image_to_upload), remote_album['id'])
+
+        if resp is None:
+            input(f'Failed to upload image to album: {remote_album}')
+            exit()
 
         pos += 1
 
 
 def upload_image(image_path, cat_id):
-    storage.upload_image(image_path, cat_id)
+    return storage.upload_image(image_path, cat_id)
 
 
 def main():
@@ -65,6 +69,10 @@ def main():
             parent_id = parent['id'] if parent is not None else None
 
             created_id = create_album(title, parent_id)
+
+            if created_id is None:
+                continue
+
             new_remote = {'id': created_id, 'name': title, 'total_nb_images': 0}
 
             if parent_id is not None:
@@ -74,6 +82,9 @@ def main():
             remote_albums_titles.append(title)
 
         remote_album = find_remote(remote_albums, title)
+
+        if remote_album is None:
+            continue
 
         if remote_album['total_nb_images'] < len(local_album['__content__']):
             start_uploading(local_album, remote_album)
