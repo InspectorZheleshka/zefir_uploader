@@ -26,24 +26,25 @@ class Api:
             return None
 
     def get_response(self, method, data_format='json', files=None, retry_count=0, **kwargs):
-        if retry_count == 3:
+        if retry_count == 5:
             return None
 
         url = self.base_path.format(format=data_format, method=method)
 
         def req():
             if files is None:
-                return self.s.post(url, data=kwargs)
+                response = self.s.post(url, data=kwargs)
             else:
-                return self.s.post(url, data=kwargs, files=files)
+                response = self.s.post(url, data=kwargs, files=files)
+
+            print(f'raw resp {response.content}. Retry count: {retry_count}')
+            return response
 
         resp = req()
 
-        if resp.status_code == 404 or resp.status_code == 405 or resp.status_code == 401:
-            if self.login():
-                return self.get_response(method, data_format, files, retry_count + 1, **kwargs)
-            else:
-                return None
+        if resp.status_code != 200:
+            self.login()
+            return self.get_response(method, data_format, files, retry_count + 1, **kwargs)
 
         return resp
 
@@ -58,6 +59,10 @@ class Api:
         print(resp.headers)
 
         cookie = resp.headers.get('Set-Cookie', None)
+
+        if cookie is None:
+            return False
+
         cookie = cookie.split(',')
 
         new_cookie = None
@@ -80,7 +85,7 @@ class Api:
         try:
             return resp['result']['categories']
         except Exception as ex:
-            print(ex)
+            print(f'Get albums exception {ex}')
             return None
 
     def create_album(self, name, parent_id=None):
